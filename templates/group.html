@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Csoport adatbekérő</title>
+    <style>
+      body {
+        background-color: whitesmoke;
+      }
+    </style>
+    <script>
+		function showCMR() {
+			var cmr = document.getElementById("cmrbaf_0");
+			var limit = document.getElementById("cmrlimit");
+			var clauses = document.getElementById("cmrclauses");
+			var cb = document.getElementById("cabotage_radio");
+
+            if (cmr.checked == true) {
+				limit.style.display = "block";
+				clauses.style.display = "block";
+				cb.style.display = "block";
+			} else {
+				limit.style.display = "none";
+				clauses.style.display = "none";
+				cb.style.display = "none";
+			}
+		}
+        function showBAF() {
+			var baf = document.getElementById("cmrbaf_1");
+			var limit = document.getElementById("baflimit");
+			var clauses = document.getElementById("bafclauses");
+
+            if (baf.checked == true) {
+				limit.style.display = "block";
+				clauses.style.display = "block";
+			} else {
+				limit.style.display = "none";
+				clauses.style.display = "none";
+			}
+		}
+        function showCabotage() {
+			var cabotage = document.getElementById("cabotage_lab");
+            cabotage.style.display = "block";
+		}
+        function hideCabotage() {
+			var cabotage = document.getElementById("cabotage_lab");
+            cabotage.style.display = "none";
+		}
+	</script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <h1 class="text-center mt-5 mb-5">{{ group }}</h1>
+    <form style="max-width:550px; margin:0 auto;" method="POST">
+      <div class="form-group">
+        <label>Árufuvarozás</label> 
+        <div>
+          <div class="custom-control custom-checkbox custom-control-inline">
+            <input name="cmrbaf" id="cmrbaf_0" type="checkbox" class="custom-control-input" value="cmr" onclick="showCMR()">
+            <label for="cmrbaf_0" class="custom-control-label">CMR</label>
+          </div>
+          <div class="custom-control custom-checkbox custom-control-inline">
+            <input name="cmrbaf" id="cmrbaf_1" type="checkbox" class="custom-control-input" value="baf" onclick="showBAF()">
+            <label for="cmrbaf_1" class="custom-control-label">BÁF</label>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="form-group">
+        <label for="number_of_trucks">Járművek száma</label> 
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-truck"></i>
+            </div>
+          </div> 
+          <input id="number_of_trucks" name="number_of_trucks" type="number" class="form-control" required="required">
+        </div>
+      </div>
+      <div id="cmrlimit", class="form-group", style="display:none;">
+        <label for="cmr">CMR limit</label> 
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-money"></i>
+            </div>
+          </div> 
+          <input id="cmr" name="cmr" placeholder="0" type="number" class="form-control">
+        </div>
+      </div>
+      <div id="baflimit", class="form-group", style="display:none;">
+        <label for="baf">BÁF limit</label> 
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-money"></i>
+            </div>
+          </div> 
+          <input id="baf" name="baf" type="number" class="form-control">
+        </div>
+      </div>
+      <div id="cabotage_radio" class="form-group">
+        <label>Kabotázs fuvart végez</label> 
+        <div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input name="cabotage" id="cabotage_0" type="radio" class="custom-control-input" value="1" onclick="showCabotage()">
+            <label for="cabotage_0" class="custom-control-label">igen</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input name="cabotage" id="cabotage_1" type="radio" class="custom-control-input" value="0" onclick="hideCabotage()" checked>
+            <label for="cabotage_1" class="custom-control-label">nem</label>
+          </div>
+        </div>
+      </div>
+      <div id="cabotage_lab", class="form-group", style="display:none;">
+        <label for="cabotage_add">Kabotázs fuvarok helye</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fa fa-truck"></i>
+            </div>
+          </div> 
+          <input id="cabotage_add" name="cabotage_add" type="text" class="form-control">
+        </div>
+      </div>
+      <div id="cmrclauses", class="form-group", style="display:none;">
+        <label>CMR záradékok</label> 
+        <div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_0" type="checkbox" class="custom-control-input" value="0"> 
+              <label for="cmr_clauses_0" class="custom-control-label">CMRZ-834 Nyitott, fedetlen gépjárművel szállított áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_1" type="checkbox" class="custom-control-input" value="1"> 
+              <label for="cmr_clauses_1" class="custom-control-label">CMRZ-835 Ömlesztett áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_2" type="checkbox" class="custom-control-input" value="2"> 
+              <label for="cmr_clauses_2" class="custom-control-label">CMRZ-836 Tartálykocsikkal szállított áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_3" type="checkbox" class="custom-control-input" value="3"> 
+              <label for="cmr_clauses_3" class="custom-control-label">CMRZ-837 Konténerek kárai záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_4" type="checkbox" class="custom-control-input" value="4"> 
+              <label for="cmr_clauses_4" class="custom-control-label">CMRZ-838 Ásványolaj áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_5" type="checkbox" class="custom-control-input" value="5"> 
+              <label for="cmr_clauses_5" class="custom-control-label">CMRZ-839 Dohánytermék záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_6" type="checkbox" class="custom-control-input" value="6"> 
+              <label for="cmr_clauses_6" class="custom-control-label">CMRZ-840 Elektronikai áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_7" type="checkbox" class="custom-control-input" value="7"> 
+              <label for="cmr_clauses_7" class="custom-control-label">CMRZ-841 Szabályozott hőmérsékleten szállítandó áruk záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_8" type="checkbox" class="custom-control-input" value="8"> 
+              <label for="cmr_clauses_8" class="custom-control-label">CMRZ-842 Szeszesital záradék</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="cmr_clauses" id="cmr_clauses_9" type="checkbox" class="custom-control-input" value="9"> 
+              <label for="cmr_clauses_9" class="custom-control-label">CMRZ-843 Mobiltelefon záradék</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="bafclauses", class="form-group", style="display:none;">
+        <label>BÁF záradék</label> 
+        <div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_0" type="checkbox" class="custom-control-input" value="0"> 
+              <label for="baf_clauses_0" class="custom-control-label">B01.sz. záradék – Nyitott szállítóeszköz</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_1" type="checkbox" class="custom-control-input" value="1"> 
+              <label for="baf_clauses_1" class="custom-control-label">B02.sz. záradék – Ömlesztett áruk kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_2" type="checkbox" class="custom-control-input" value="2"> 
+              <label for="baf_clauses_2" class="custom-control-label">B03.sz. záradék – Tartálykocsi</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_3" type="checkbox" class="custom-control-input" value="3"> 
+              <label for="baf_clauses_3" class="custom-control-label">B04.sz. záradék – Konténeres áruszállítások kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_4" type="checkbox" class="custom-control-input" value="4"> 
+              <label for="baf_clauses_4" class="custom-control-label">B05.sz. záradék – Ásványolaj áruk kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_5" type="checkbox" class="custom-control-input" value="5"> 
+              <label for="baf_clauses_5" class="custom-control-label">B06.sz. záradék – Dohánytermékek kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_6" type="checkbox" class="custom-control-input" value="6"> 
+              <label for="baf_clauses_6" class="custom-control-label">B07.sz. záradék – Kávéféleségek, édesség kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_7" type="checkbox" class="custom-control-input" value="7"> 
+              <label for="baf_clauses_7" class="custom-control-label">B08.sz. záradék – Elektronikai áruk kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_8" type="checkbox" class="custom-control-input" value="8"> 
+              <label for="baf_clauses_8" class="custom-control-label">B09.sz. záradék – Szabályozott hőmérsékleten szállítandó áruk kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_9" type="checkbox" class="custom-control-input" value="9"> 
+              <label for="baf_clauses_9" class="custom-control-label">B10.sz. záradék – Szeszesital áruk kárai</label>
+            </div>
+          </div>
+          <div class="custom-controls-stacked">
+            <div class="custom-control custom-checkbox">
+              <input name="baf_clauses" id="baf_clauses_10" type="checkbox" class="custom-control-input" value="10"> 
+              <label for="baf_clauses_10" class="custom-control-label">B13.sz. záradék</label>
+            </div>
+          </div>
+        </div>
+      </div> 
+      <div class="form-group">
+        <button name="submit" type="submit" class="btn btn-primary">Tovább</button>
+      </div>
+    </form>
+  </body>
+</html>
