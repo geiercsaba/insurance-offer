@@ -10,6 +10,9 @@ class Customer:
         self.broker = None
         self.email = None
 
+        self.cmr = False
+        self.baf = False
+
         self.groups = []
 
     def customer_form_json(self, customer, groups):
@@ -29,8 +32,10 @@ class Customer:
             new_group.cmr_limit = int(group["cmr_limit"])
             if new_group.cmr_limit != 0:
                 new_group.cmr = True
+                self.cmr = True
             new_group.baf_limit = int(group["baf_limit"])
             if new_group.baf_limit != 0:
+                self.baf = True
                 new_group.baf = True
             new_group.cabotage = group["cabotage"]
             new_group.group_number = group["group_number"]
@@ -44,6 +49,7 @@ class Customer:
             for i in range(len(new_group.baf_clauses)):
                 if baf_claus[i] == "1":
                     new_group.baf_clauses[i][2] = True
+
             # díjkalkuláció
             new_group.calculator()
             self.groups.append(new_group)
@@ -54,10 +60,10 @@ class Customer:
 
         def list_to_string(lista):
             txt = ""
-            for element in lista:
+            for elem in lista:
                 if txt:
                     txt += "\n"
-                txt += element
+                txt += elem
             return txt
 
         def add_to_dict(my_dict: dict, new_key: str, new_value: str, duplicate=False):
@@ -176,7 +182,7 @@ class Customer:
                     if clause[0] not in baf_clauses:
                         baf_clauses.append(clause[0])
                     if i == 0 and additional_txt_1 not in additional_text:
-                        additional_text.appendappend(additional_txt_1)
+                        additional_text.append(additional_txt_1)
                     elif i == 2 and sublimit_txt_1 not in limit:
                         limit.append(sublimit_txt_1)
                     elif i == 3 and sublimit_txt_2 not in limit:
@@ -202,11 +208,8 @@ class Customer:
                         transported_goods.append(clause[3])
 
             new_eg = "CMR biztosítási feltételekben és a Belföldi közúti árutovábbítási felelősségbiztosítás <BÁF> feltételekben" if cmr_limits and baf_limits else "" \
-                                                                                                                                                                    "CMR biztosítási feltételekben" if cmr_limits else "Belföldi közúti árutovábbítási felelősségbiztosítás <BÁF> feltételekben"
+                     "CMR biztosítási feltételekben" if cmr_limits else "Belföldi közúti árutovábbítási felelősségbiztosítás <BÁF> feltételekben"
             new_eg += " foglaltakon túl: költözési ingóság"
-
-            new_ts = "földrajzi értelemben vett Európa, beleértve Magyarország, kizárva: Ukrajna, FÁK országok, Koszovó, Albánia" if cmr_limits and baf_limits else "" \
-                                                                                                                                                                    "földrajzi értelemben vett Európa, kizárva: Ukrajna, FÁK országok, Koszovó, Albánia" if cmr_limits else "Magyarország"
 
             new_tg = "normál kereskedelmi áru (csomagolt egységrakomány)"
             for good in transported_goods:
@@ -214,6 +217,8 @@ class Customer:
 
             for exclude in excluded_goods:
                 new_eg += exclude
+
+            new_ts = "földrajzi értelemben vett Európa, beleértve Magyarország, kizárva: Ukrajna, FÁK országok, Koszovó, Albánia" if group.cmr and group.baf else "földrajzi értelemben vett Európa, kizárva: Ukrajna, FÁK országok, Koszovó, Albánia" if group.cmr else "Magyarország"
 
             add_to_dict(transported_good, group.group_number[0], new_tg)
             add_to_dict(territorial_scope, group.group_number[0], new_ts)
@@ -230,7 +235,7 @@ class Customer:
 
         additional_txt = ""
         for element in additional_text:
-            if element:
+            if additional_txt:
                 additional_txt += "\n"
             additional_txt += element
 
@@ -291,7 +296,7 @@ class Group:
                 fee = 102_996
             elif self.cmr_limit <= 300_000:
                 fee = 129_996
-            elif self.cmr_limit > 300_000:
+            else:
                 fee = self.cmr_limit * (129_996 / 300_000)
 
             # az aktív záradékok pótdíját hozzáadjuk a díjhoz
@@ -318,6 +323,8 @@ class Group:
             elif self.baf_limit <= 15_000_000:
                 fee = 85_000
             elif self.baf_limit >= 20_000_000:
+                fee = 111_000
+            else:
                 fee = self.baf_limit * (111_000 / 20_000_000)
 
             # az aktív záradékok pótdíját hozzáadjuk a díjhoz
@@ -373,4 +380,3 @@ class Group:
             discount()
 
         self.fee_per_truck = int(self.fee_per_truck)
-
