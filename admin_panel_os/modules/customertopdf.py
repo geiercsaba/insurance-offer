@@ -1,44 +1,36 @@
-import time
 import docx
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 import os
-from docx2pdf import convert
 
-
-# D_PATH = os.environ.get('D_PATH')
-D_PATH = 'files'
+D_PATH = os.environ.get('D_PATH')
+NEW_PATH = os.environ.get('NEW_PATH')
 
 class CreateDOC:
-    def __init__(self, customer, path):
+    def __init__(self, customer):
         self.customer = customer
-        if path is None:
-            path = D_PATH
         self.doc = None
-        self.new_doc_path = path
+        self.new_doc_path = D_PATH
         self.create_template()
         self.document_data()
 
         self.doc.save(self.new_doc_path+".docx")
-        convert(self.new_doc_path+".docx")
-        #os.startfile(self.new_doc_path+".docx")
+        os.startfile(self.new_doc_path+".docx")
 
 
     def create_template(self):
-        cmr = False
-        baf = False
         for group in self.customer.groups:
             if group.cmr:
-                cmr = True
+                self.customer.cmr = True
             if group.baf:
-                baf = True
-        if cmr and baf:
-            self.new_doc_path = f"{self.new_doc_path}/{self.customer.company_name}_CMR_BAF_Ajánlat_{self.customer.broker}"
+                self.customer.baf = True
+        if self.customer.cmr and self.customer.baf:
+            self.new_doc_path = f"{NEW_PATH}/{self.customer.company_name}_CMR_BAF_Ajánlat_{self.customer.broker}"
             self.doc = docx.Document(f'{D_PATH}/doc_template/cmrbaf_t.docx')
-        elif cmr:
-            self.new_doc_path = f"{self.new_doc_path}/{self.customer.company_name}_CMR_Ajánlat_{self.customer.broker}"
+        elif self.customer.cmr:
+            self.new_doc_path = f"{NEW_PATH}/{self.customer.company_name}_CMR_Ajánlat_{self.customer.broker}"
             self.doc = docx.Document(f'{D_PATH}/doc_template/cmr_t.docx')
         else:
-            self.new_doc_path = f"{self.new_doc_path}/{self.customer.company_name}_BAF_Ajánlat_{self.customer.broker}"
+            self.new_doc_path = f"{NEW_PATH}/{self.customer.company_name}_BAF_Ajánlat_{self.customer.broker}"
             self.doc = docx.Document(f'{D_PATH}/doc_template/baf_t.docx')
 
     def document_data(self):
