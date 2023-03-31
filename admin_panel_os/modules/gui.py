@@ -3,6 +3,7 @@ from tkinter import messagebox, font, filedialog
 from modules.customer import Customer
 from modules.customertopdf import CreateDOC
 from modules.db import DB
+from modules.web_util import check_company
 
 
 class GUI:
@@ -44,14 +45,40 @@ class GUI:
             self.db.update_customer(customer.id)
             window.destroy()
 
+        def check_customer():
+            if customer.registration_number == '@':
+                messagebox.showinfo("Info", "Csak cégeket tudsz ellenőrizni!")
+                return
+
+            info, data = check_company(customer)
+            if not data:
+                messagebox.showinfo("Info", "Nem sikerült az ellenőrzés!")
+                return
+
+            message_box = messagebox.askquestion("Változás", info)
+            if message_box == 'yes':
+                customer.company_name = data[0]
+                customer.address = data[1]
+                customer.registration_number = data[2]
+                customer.tax_number = data[3]
+                company_label.config(text=f"Szerződő: {customer.company_name}\n"
+                                          f"Székhely: {customer.address}\n"
+                                          f"Cégjegyzékszám: {customer.registration_number}\n"
+                                          f"Adószám: {customer.tax_number}")
+            else:
+                pass
+
         window = Toplevel()
 
         # Ügyfél adatok
         company_data = LabelFrame(window, text="Ügyfél adatok")
         company_data.grid(row=0, column=0)
         company_data.columnconfigure(0, minsize=600)
-        Label(company_data, text=f"Szerződő: {customer.company_name}\nSzékhely: {customer.address}\n"
-                   f"Cégjegyzékszám: {customer.registration_number}\nAdószám: {customer.tax_number}", font=self.font_size).grid(row=0, column=0)
+        company_label = Label(company_data, text=f"Szerződő: {customer.company_name}\nSzékhely: {customer.address}\n"
+              f"Cégjegyzékszám: {customer.registration_number}\nAdószám: {customer.tax_number}",
+              font=self.font_size)
+        company_label.grid(row=0, column=0, columnspan=2)
+        Button(company_data, text="Ellenőrzés", command=check_customer).grid(row=1, column=0, columnspan=2)
 
         # Alkusz adatok
         broker = LabelFrame(window, text=f"Alkusz adatai")
