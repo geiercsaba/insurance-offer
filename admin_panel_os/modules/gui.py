@@ -12,6 +12,7 @@ class GUI:
         self.font_size = font.Font(size=18)
         self.window.title("Ajánlatkészítő")
         self.db = DB()
+        self.open_tl = False
 
         self.customers = []
         self.customers_get()
@@ -37,6 +38,9 @@ class GUI:
             Button(new_frame, text="Ajánlat", command=lambda cust=customer: self.show_customer(cust)).grid(row=0, column=1)
 
     def show_customer(self, customer):
+        if len(self.window.winfo_children()) > 1:
+            messagebox.showinfo("Figyelem!", "Egyszerre csak egy ajánlatot készíthetsz")
+            return
         def format_string(txt):
             return '{:,}'.format(txt).replace(',', ' ')
 
@@ -46,17 +50,10 @@ class GUI:
             window.destroy()
 
         def check_customer():
-            if customer.registration_number == '@':
-                messagebox.showinfo("Info", "Csak cégeket tudsz ellenőrizni!")
-                return
-
             info, data = check_company(customer)
-            if not data:
-                messagebox.showinfo("Info", "Nem sikerült az ellenőrzés!")
-                return
 
             message_box = messagebox.askquestion("Változás", info)
-            if message_box == 'yes':
+            if message_box == 'yes' and data:
                 customer.company_name = data[0]
                 customer.address = data[1]
                 customer.registration_number = data[2]
@@ -68,7 +65,7 @@ class GUI:
             else:
                 pass
 
-        window = Toplevel()
+        window = Toplevel(self.window)
 
         # Ügyfél adatok
         company_data = LabelFrame(window, text="Ügyfél adatok")
