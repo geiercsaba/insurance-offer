@@ -12,7 +12,6 @@ class GUI:
         self.font_size = font.Font(size=18)
         self.window.title("Ajánlatkészítő")
         self.db = DB()
-        self.open_tl = False
 
         self.customers = []
         self.customers_get()
@@ -52,18 +51,19 @@ class GUI:
         def check_customer():
             info, data = check_company(customer)
 
-            message_box = messagebox.askquestion("Változás", info)
-            if message_box == 'yes' and data:
-                customer.company_name = data[0]
-                customer.address = data[1]
-                customer.registration_number = data[2]
-                customer.tax_number = data[3]
-                company_label.config(text=f"Szerződő: {customer.company_name}\n"
-                                          f"Székhely: {customer.address}\n"
-                                          f"Cégjegyzékszám: {customer.registration_number}\n"
-                                          f"Adószám: {customer.tax_number}")
+            if data:
+                message_box = messagebox.askquestion("Változás", info)
+                if message_box == 'yes':
+                    customer.company_name = data[0]
+                    customer.address = data[1]
+                    customer.registration_number = data[2]
+                    customer.tax_number = data[3]
+                    company_label.config(text=f"Szerződő: {customer.company_name}\n"
+                                              f"Székhely: {customer.address}\n"
+                                              f"Cégjegyzékszám: {customer.registration_number}\n"
+                                              f"Adószám: {customer.tax_number}")
             else:
-                pass
+                messagebox.showwarning("Figyelem!", info)
 
         window = Toplevel(self.window)
 
@@ -71,9 +71,10 @@ class GUI:
         company_data = LabelFrame(window, text="Ügyfél adatok")
         company_data.grid(row=0, column=0)
         company_data.columnconfigure(0, minsize=600)
-        company_label = Label(company_data, text=f"Szerződő: {customer.company_name}\nSzékhely: {customer.address}\n"
-              f"Cégjegyzékszám: {customer.registration_number}\nAdószám: {customer.tax_number}",
-              font=self.font_size)
+        company_label = Label(company_data,
+                              text=f"Szerződő: {customer.company_name}\nSzékhely: {customer.address}\n"
+                                   f"Cégjegyzékszám: {customer.registration_number}\nAdószám: {customer.tax_number}",
+                                   font=self.font_size)
         company_label.grid(row=0, column=0, columnspan=2)
         Button(company_data, text="Ellenőrzés", command=check_customer).grid(row=1, column=0, columnspan=2)
 

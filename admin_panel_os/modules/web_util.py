@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, NoSuchWindowException
 import string
-
+from modules.customer import Customer
 
 def check_company(customer):
     """
@@ -27,7 +27,7 @@ def check_company(customer):
         wait = WebDriverWait(driver, 300)
         new_tax_number = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "adoszam")))
         wait.until(EC.text_to_be_present_in_element((By.CLASS_NAME, "adoszam"), new_tax_number.text))
-    except TimeoutException:
+    except (TimeoutException, NoSuchWindowException):
         return "Nincs találat az adatbázisban, vagy nem jutottál át a recaptcha ellenőrzésen", None
 
     # elmentjük az új adatokat egy tömbbe és lérehozzuk a stringet
@@ -40,17 +40,15 @@ def check_company(customer):
                   f"Régi cím: {customer.address}\nÚj cím: {update_customer[1]}\n\n" \
                   f"Régi adószám: {customer.tax_number}\nÚj adószám: {update_customer[3]}\n\n"
 
-    # Teszt fázis
-    # A felhasználó további 180 másodpercig használhatja  a böngészőt, majd utána bezárjuk
     try:
-        WebDriverWait(driver, 180).until(EC.presence_of_element_located((By.NAME, 'muhahahaha')))
-    except TimeoutException:
-        pass
-    except NoSuchWindowException:
-        pass
-    # teszt fázis vége
-
-    return update_info, update_customer
+        cell = driver.find_element(By.XPATH, '//*[@id="XXX"]/tbody/tr[1]/td[1][text()="33."]')
+        tbody = cell.find_element(By.XPATH, 'ancestor::tbody')
+        info = f"{update_customer[0]}\n{tbody.text}"
+        driver.quit()
+        return info, None
+    except NoSuchElementException:
+        driver.quit()
+        return update_info, update_customer
 
 
 def check_freelancer(customer):
@@ -78,6 +76,5 @@ def check_freelancer(customer):
     is_on = driver.find_element(By.XPATH, '/html/body/div[5]/div[5]/div[1]/span').text
     if is_on != "Működő":
         return "Az adatbázis alapján az egyéni vállalkozó jelenleg inaktív", None
-    print(name)
 
     return update_info, update_customer
